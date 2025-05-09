@@ -1,0 +1,188 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <title>To-Do List</title>
+  </head>
+  <body>
+    <h1 class="display-5 mt-3 position-absolute top-0 start-50 translate-middle">To-Do List</h1>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success text-center mb-3 alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  
+  
+
+   
+    <br>
+    <br>
+    <br>
+
+    {% if tasks|length == 0 %}
+  <div class="text-center my-5">
+    <img src="{% static 'images/to-do_list.png' %}" alt="No Tasks" class="img-fluid" style="max-height: 300px;">
+    <p class="mt-3 fs-4 text-muted">No Matches</p>
+  </div>
+{% endif %}
+    <div class="container-sm my-5">
+        <div class="d-flex justify-content-between align-items-center">
+        <a href="" data-bs-toggle="modal" data-bs-target="#addtaskModal" class="btn btn-dark mx-5">Add New Task</a>
+        <form action="" method="POST" class="d-flex">
+          {% csrf_token %}
+            <input type="search" name="querysearch" value="{{query}}" class="form-control mx-2" placeholder="Search...">
+            <button class="btn btn-success" name="search">Search</button>
+        </form>
+    </div>
+    </div>
+
+  <!-- Modal -->
+<div class="modal fade" id="addtaskModal" tabindex="-1" aria-labelledby="addtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form action="" method="POST">
+        {% csrf_token %}
+        <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addtaskModalLabel">Add New Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-floating">
+                <textarea class="form-control" name="title" placeholder="Enter a Title" id="title" style="height: 75px"></textarea>
+                <label for="title">Title</label>
+              </div>
+          <br>
+          <div class="form-floating">
+            <textarea class="form-control" name="description" placeholder="Enter the Description" id="description" style="height: 100px"></textarea>
+            <label for="description">Description</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-dark" name="add">Add Task</button>
+        </div>
+      </div>
+      </form>
+    </div>
+</div>
+
+<!-- Image -->>
+{% if tasks|length == 0 %}
+  <div class="text-center my-5">
+    <img src="{% static 'images/notasks.jpeg' %}" alt="No Tasks" class="img-fluid" style="max-height: 300px;">
+    <p class="mt-3 fs-4 text-muted">No tasks yet. Add one to get started!</p>
+  </div>
+{% endif %}
+
+
+{% if tasks %}
+<span class="border border-dark">
+  <table class="table border border-dark">
+    <thead  class="table-dark">
+      <tr>
+        <th scope="col">No.</th>
+        <th scope="col">Title</th>
+        <th scope="col">Description</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody >
+     {%for task in tasks %}
+     <tr class="table-warning">
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{task.title}}</td>
+        <td>{{task.description}}</td>
+        <td>
+          <a href="" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#updatetaskModal_{{task.id}}" ><i class="fa-solid fa-pen-to-square" style="color: #000000;"></i></a>
+          <a href="" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#deletetaskModal_{{task.id}}" ><i class="fa-solid fa-trash" style="color: #ff1f1f;"></i></a>
+        </td>
+      </tr>
+
+  <!-- Update Modal -->
+<div class="modal fade" id="updatetaskModal_{{task.id}}" tabindex="-1" aria-labelledby="updatestudentModalLabel_{{task.id}}" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updatetaskModalLabel_{{task.id}}">Update Task</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" value="{{task.id}}">
+            <div >
+              <label for="title" > Title </label>
+                <input type="text" name="title" class="form-control" value="{{task.title}}" id="title" >
+              </div>
+          <br>
+          <div >
+            <label for="description" > Description </label>
+              <input type="description" name="description" class="form-control" value="{{task.description}}" id="description" >
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-dark" name="update" >Update Task</button>
+        </div>
+      </div>
+      </form>
+    </div>
+</div>
+
+  <!-- Delete Modal -->
+
+
+<div class="modal fade" id="deletetaskModal_{{task.id}}" tabindex="-1" aria-labelledby="deletestudentModalLabel_{{task.id}}" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deletetaskModalLabel_{{task.id}}">Delete Record</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <input type="hidden" name="id" value="{{task.id}}">
+        <br>
+        <p> Are you Sure? You want To Delete This Record. </p>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger" name="delete" >Delete Record</button>
+        </div>
+      </div>
+      </form>
+    </div>
+</div>
+
+     {% endfor %}
+    </tbody>
+  </table>
+</span>
+{% endif %}
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </body>
+</html>
